@@ -15,7 +15,7 @@ from tkinter import Text
 import sqlalchemy as adb
 import cx_Oracle as ora
 from sqlalchemy import MetaData, Table 
-from datetime import date
+import datetime 
 
 
 # Вставка данных в БД из формы интерфейса
@@ -107,7 +107,7 @@ def insertbd(l_conn_ora):
         flag = True
     else:
         try: # проверка на соответствие дате
-            date = datetime.datetime.strptime(date, '%Y-%m-%d')
+            date = datetime.datetime.strptime(date, '%Y-%m-%d').date()
             lbl_none3.grid_remove()
         except:
             lbl_none3.grid(column=1, row=7)
