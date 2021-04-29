@@ -16,6 +16,55 @@ import sqlalchemy as adb
 import cx_Oracle as ora
 from sqlalchemy import MetaData, Table 
 import datetime 
+import pandas as pd
+import openpyxl,xlsxwriter,xlrd
+
+# Экспорт данных из таблицы в файл
+def export_xls(namefile):
+    try:
+        text = ent.get('1.0', END)
+        flag_ = True
+        name = ''
+        arr_name = []
+        sum = ''
+        arr_sum = []
+
+        ch = True
+        ch_z = False
+        for buk in text:
+            if buk != ' ' and buk != '\n':
+                if flag_:
+                    if ch or ch_z:
+                        name += buk
+                    else:
+                        name += ' ' + buk
+                        ch_z = True
+                else:
+                    sum += buk
+            elif buk == ' ':
+                if ch == True:
+                    ch = False
+                else:
+                    flag_ = False
+            elif buk == '\n':
+                if not flag_:
+                    arr_name.append(name)
+                    name = ''
+                    arr_sum.append(sum)
+                    sum = ''
+                    flag_ = True
+                    ch = True
+                    ch_z = False
+           
+
+        df = pd.DataFrame({'Manager': arr_name, 'Summa':arr_sum})
+        df.to_excel('./{}.xlsx'.format(namefile))
+        print('Данные экспортированы в файл')
+        lbl_exl_2.grid_remove()
+        lbl_exl.grid(column=2, row=22, padx=3, pady=3)
+    except:
+        lbl_exl.grid_remove()
+        lbl_exl_2.grid(column=2, row=22, padx=3, pady=3)
 
 
 # Вставка данных в БД из формы интерфейса
@@ -44,7 +93,7 @@ def rating(l_conn_ora):
     ent.delete('1.0', END)
     for data in l_pre_res.fetchall():
         ent.insert(END, '\n{} {}'.format(data[0], data[1]))
-        
+
 # Подсчет итогового рейтинга     
 def rating2(l_conn_ora):
     if var2.get()==0:
@@ -77,6 +126,8 @@ def rating2(l_conn_ora):
     ent.delete('1.0', END)
     for data in l_pre_res.fetchall():
         ent.insert(END, '\n{} {}'.format(data[0], data[1]))
+        
+
 
 def insertbd(l_conn_ora):
     flag = False # флаг ошибки - если он хоть раз поднят, значит какие данные введены не корректно
@@ -255,4 +306,13 @@ rad_3 = Radiobutton(window, text='Внутрироссийские аккред�
 rad_4 = Radiobutton(window, text='Международные аккредитивы', value=1, variable=var2)
 rad_3.grid(column=1, row=20)
 rad_4.grid(column=1, row=21)
+
+btn2 = Button(window, text="Экспорт в Excel", width=20, command=lambda: export_xls(txt_exl.get()))
+btn2.grid(column=2, row=21, padx=3, pady=3)
+txt_exl = Entry(window, width=33)
+txt_exl.insert(0, 'Введите название файла')
+txt_exl.grid(column=3, row=21, padx=3, pady=3)
+lbl_exl = Label(window, text="Данные сохранены в excel-файле", font=("Calibri", 10, "bold"))
+lbl_exl_2 = Label(window, text="Данные НЕ сохранены в excel-файле", font=("Calibri", 10, "bold"))
+
 window.mainloop()
