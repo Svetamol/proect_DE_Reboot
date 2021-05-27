@@ -283,8 +283,8 @@ ent = Text(window, width=33)
 ent.grid(row=24, column=0, rowspan=10, sticky=E + W + N)
 
 # Подключение к БД
-l_user = 'shebatneva_sa'
-l_pass = 'K.,jdm2013'
+l_user = ''
+l_pass = ''
 l_tns = ora.makedsn('13.95.167.129', 1521, service_name='pdb1')
 l_conn_ora = ''
 l_conn_ora = adb.create_engine(r'oracle://{p_user}:{p_pass}@{p_tns}'
